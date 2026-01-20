@@ -12,6 +12,7 @@ const appNameMap: Record<string, string> = {
   coffee: "Coffee",
   contact: "Mail",
   terminal: "Terminal",
+  story: "Story",
 };
 
 export function MenuBar() {

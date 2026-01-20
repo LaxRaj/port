@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { BookOpen, Music2, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { BookOpen, CloudFog, Music2, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,16 +23,13 @@ const cardVariants = {
   },
 };
 
-const hoverTilt = {
-  rotateX: -2,
-  rotateY: 2,
-  transition: { type: "spring", stiffness: 220, damping: 16 },
-};
-
 const bars = [0, 1, 2, 3, 4, 5, 6];
 
 const avatar =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%237dd3fc'/><stop offset='1' stop-color='%23a78bfa'/></linearGradient></defs><rect width='100%25' height='100%25' rx='300' fill='url(%23g)'/><circle cx='65%25' cy='35%25' r='140' fill='rgba(255,255,255,0.35)'/></svg>";
+
+const spotifyUrl =
+  "https://open.spotify.com/playlist/3ViMSB7c9z0qthMFgoXml8?si=jVRivIw0Sleuwh00Njiupw&pi=G7YCTe-eRZ-Iq&nd=1&dlsi=ed6860d713874fc5";
 
 function useSanFranciscoTime() {
   const [time, setTime] = useState<string>("");
@@ -49,6 +46,43 @@ function useSanFranciscoTime() {
     return () => clearInterval(interval);
   }, []);
   return time;
+}
+
+function SpotlightCard({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 150, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 150, damping: 20 });
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    mouseX.set(event.clientX - rect.left);
+    mouseY.set(event.clientY - rect.top);
+  };
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 150, damping: 20 }}
+      onMouseMove={handleMouseMove}
+      className={`relative overflow-hidden rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5 ${className}`}
+      style={{
+        "--x": springX,
+        "--y": springY,
+        backgroundImage:
+          "radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)",
+      }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export function AboutMeApp() {
@@ -73,12 +107,7 @@ export function AboutMeApp() {
         className="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:grid-rows-3"
       >
         {/* Identity Tile */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5 md:col-span-2 md:row-span-2"
-          style={{ transformStyle: "preserve-3d" }}
-        >
+        <SpotlightCard className="col-span-1 row-span-1 p-6 md:col-span-2 md:row-span-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
             Identity
           </p>
@@ -94,20 +123,15 @@ export function AboutMeApp() {
                 Building AI and playing tennis in the fog.
               </p>
               <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
-                <span className="text-emerald-300">●</span> Available for SE
-                Roles
+                <span className="text-emerald-300">●</span> Exploring San
+                Francisco
               </span>
             </div>
           </div>
-        </motion.div>
+        </SpotlightCard>
 
         {/* Music Module */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5"
-          style={{ transformStyle: "preserve-3d" }}
-        >
+        <SpotlightCard className="col-span-1 row-span-1 md:col-span-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
             Recently Played
           </p>
@@ -133,15 +157,60 @@ export function AboutMeApp() {
             <Music2 className="h-4 w-4" />
             Synthwave + Lo-fi blend
           </div>
-        </motion.div>
+          <a
+            href={spotifyUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex text-xs font-semibold text-emerald-300 hover:text-emerald-200"
+          >
+            Open playlist
+          </a>
+        </SpotlightCard>
+
+        {/* Literature Stack */}
+        <SpotlightCard className="col-span-1 row-span-1 md:row-span-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+            Literature Stack
+          </p>
+          <div className="mt-4 flex items-center gap-2 text-white/70">
+            <BookOpen className="h-4 w-4 text-emerald-300" />
+            <p className="text-sm font-medium leading-relaxed">Finance</p>
+          </div>
+          <div className="mt-3 flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <div className="h-14 w-3 rounded-sm bg-emerald-300/70" />
+              <p className="text-sm font-medium leading-relaxed text-white/70">
+                The Intelligent Investor
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-16 w-3 rounded-sm bg-blue-400/60" />
+              <p className="text-sm font-medium leading-relaxed text-white/70">
+                The Psychology of Money
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 text-sm font-medium leading-relaxed text-white/70">
+            Classics
+          </div>
+          <div className="mt-2 flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-3 rounded-sm bg-purple-400/60" />
+              <p className="text-sm font-medium leading-relaxed text-white/70">
+                The Picture of Dorian Gray
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-14 w-3 rounded-sm bg-white/40" />
+              <p className="text-sm font-medium leading-relaxed text-white/70">
+                Crime and Punishment
+              </p>
+            </div>
+          </div>
+        </SpotlightCard>
 
         {/* Tennis Tile */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5"
-          style={{ transformStyle: "preserve-3d" }}
-        >
+        <SpotlightCard className="col-span-1 row-span-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
             Tennis
           </p>
@@ -154,69 +223,30 @@ export function AboutMeApp() {
           <p className="mt-3 text-sm font-medium leading-relaxed text-white/60">
             Pac Cup &apos;24
           </p>
-        </motion.div>
+        </SpotlightCard>
 
         {/* Pickleball Tile */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5"
-          style={{ transformStyle: "preserve-3d" }}
-        >
+        <SpotlightCard className="col-span-1 row-span-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
             Pickleball
           </p>
           <p className="mt-4 text-sm font-medium leading-relaxed text-white/70">
-            SFSU Intramural participation
+            SFSU Intramurals
           </p>
-        </motion.div>
-
-        {/* Bookshelf */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-            Bookshelf
-          </p>
-          <div className="mt-4 flex items-center gap-2 text-white/70">
-            <BookOpen className="h-4 w-4 text-emerald-300" />
-            <p className="text-sm font-medium leading-relaxed">
-              Finance
-            </p>
-          </div>
-          <div className="mt-3 flex items-end gap-2">
-            <div className="h-16 w-6 rounded-md bg-emerald-300/70" />
-            <div className="h-20 w-6 rounded-md bg-blue-400/60" />
-            <div className="h-14 w-6 rounded-md bg-purple-400/60" />
-            <div className="h-18 w-6 rounded-md bg-white/40" />
-          </div>
-          <div className="mt-4 text-xs text-white/60">
-            The Intelligent Investor · The Psychology of Money
-          </div>
-          <div className="mt-4 text-sm font-medium leading-relaxed text-white/70">
-            Classics
-          </div>
-          <div className="mt-2 text-xs text-white/60">
-            Crime and Punishment · The Picture of Dorian Gray
-          </div>
-        </motion.div>
+        </SpotlightCard>
 
         {/* Location/Mood */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={hoverTilt}
-          className="col-span-1 row-span-1 rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5"
-          style={{ transformStyle: "preserve-3d" }}
-        >
+        <SpotlightCard className="col-span-1 row-span-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-            Location / Mood
+            SF Vibe
           </p>
           <p className="mt-4 text-sm font-medium leading-relaxed text-white/70">
             {sfTime || "SF Time loading..."}
           </p>
+          <div className="mt-3 flex items-center gap-2 text-white/60">
+            <CloudFog className="h-4 w-4 text-emerald-300" />
+            Foggy • 58°
+          </div>
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300/40" />
@@ -224,7 +254,7 @@ export function AboutMeApp() {
             </span>
             Hayes Valley
           </div>
-        </motion.div>
+        </SpotlightCard>
       </motion.div>
 
       <style jsx>{`

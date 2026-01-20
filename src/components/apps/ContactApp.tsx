@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, Send, Trash2 } from "lucide-react";
+import { CheckCircle2, Loader2, Send, Trash2 } from "lucide-react";
+import { sendEmail } from "@/app/actions/sendEmail";
 
 interface ContactFormState {
   fromEmail: string;
@@ -17,17 +18,41 @@ export function ContactApp() {
     message: "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [isInvalid, setIsInvalid] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = async () => {
     if (status !== "idle") return;
+    const isValid =
+      formState.fromEmail.trim() &&
+      formState.subject.trim() &&
+      formState.message.trim();
+    if (!isValid) {
+      setIsInvalid(true);
+      setTimeout(() => setIsInvalid(false), 300);
+      return;
+    }
+
     setStatus("sending");
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setStatus("sent");
+    const result = await sendEmail({
+      toName: "Lakshyaraj Singh Bhati",
+      fromEmail: formState.fromEmail,
+      subject: formState.subject,
+      message: formState.message,
+    });
+
+    if (result.ok) {
+      setStatus("sent");
+      setFormState({ fromEmail: "", subject: "", message: "" });
+    } else {
+      setStatus("idle");
+      setIsInvalid(true);
+      setTimeout(() => setIsInvalid(false), 300);
+    }
 
     setTimeout(() => {
       setStatus("idle");
-      setFormState({ fromEmail: "", subject: "", message: "" });
     }, 1600);
   };
 
@@ -40,35 +65,40 @@ export function ContactApp() {
     <div className="relative h-full w-full overflow-hidden">
       <div className="flex h-full flex-col rounded-3xl border border-white/20 bg-white/70 backdrop-blur-md shadow-2xl">
         {/* Toolbar */}
-        <div className="flex items-center justify-between border-b border-white/20 px-5 py-3">
-          <div className="text-xs uppercase tracking-[0.2em] text-gray-500">
-            New Message
+        <div className="border-b border-white/20 px-5 py-3 text-sm">
+          <div className="flex items-center justify-between">
+            <div className="text-xs uppercase tracking-[0.2em] text-gray-500">
+              New Message
+            </div>
+            <div className="flex items-center gap-3">
+              <motion.button
+                onClick={handleSend}
+                className="flex items-center gap-2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow hover:bg-blue-700 transition"
+                animate={isInvalid ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.3 }}
+                disabled={status === "sending"}
+              >
+                {status === "sending" ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Send className="h-3.5 w-3.5" />
+                )}
+                {status === "sending" ? "Sending..." : "Send"}
+              </motion.button>
+              <button
+                onClick={handleDiscard}
+                className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-3 py-1 text-xs text-gray-600 hover:text-gray-900 transition"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Discard
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleSend}
-              className="flex items-center gap-2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow hover:bg-blue-700 transition"
-            >
-              <Send className="h-3.5 w-3.5" />
-              Send
-            </button>
-            <button
-              onClick={handleDiscard}
-              className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-3 py-1 text-xs text-gray-600 hover:text-gray-900 transition"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Discard
-            </button>
-          </div>
-        </div>
-
-        {/* Fields */}
-        <div className="flex flex-col gap-4 px-5 py-4 text-sm">
-          <div className="flex items-center gap-3 border-b border-white/30 pb-3">
+          <div className="mt-4 flex items-center gap-3 border-b border-white/30 pb-3">
             <span className="w-16 text-xs uppercase text-gray-400">To</span>
             <span className="text-gray-800">Lakshyaraj Singh Bhati</span>
           </div>
-          <div className="flex items-center gap-3 border-b border-white/30 pb-3">
+          <div className="mt-3 flex items-center gap-3 border-b border-white/30 pb-3">
             <span className="w-16 text-xs uppercase text-gray-400">From</span>
             <input
               type="email"
@@ -80,7 +110,7 @@ export function ContactApp() {
               className="flex-1 bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
             />
           </div>
-          <div className="flex items-center gap-3 border-b border-white/30 pb-3">
+          <div className="mt-3 flex items-center gap-3 border-b border-white/30 pb-3">
             <span className="w-16 text-xs uppercase text-gray-400">
               Subject
             </span>
@@ -99,10 +129,16 @@ export function ContactApp() {
         {/* Body */}
         <div className="flex-1 px-5 pb-5">
           <textarea
+            ref={textareaRef}
             value={formState.message}
-            onChange={(event) =>
-              setFormState((prev) => ({ ...prev, message: event.target.value }))
-            }
+            onChange={(event) => {
+              setFormState((prev) => ({ ...prev, message: event.target.value }));
+              const el = textareaRef.current;
+              if (el) {
+                el.style.height = "auto";
+                el.style.height = `${el.scrollHeight}px`;
+              }
+            }}
             placeholder="Tell me about your idea..."
             className="h-full w-full resize-none bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
           />
@@ -142,7 +178,7 @@ export function ContactApp() {
                   >
                     <CheckCircle2 className="h-8 w-8 text-emerald-500" />
                   </motion.div>
-                  <span>Message Sent!</span>
+                  <span>Message Sent Successfully!</span>
                 </>
               )}
             </motion.div>

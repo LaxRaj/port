@@ -10,6 +10,7 @@ import {
   Briefcase as Suitcase,
   Sun,
   Terminal,
+  Flower,
 } from "lucide-react";
 import { Dock, type DockItem } from "./Dock";
 import { DesktopIcon } from "./DesktopIcon";
@@ -21,6 +22,10 @@ import { ContactApp } from "../apps/ContactApp";
 import { ProjectsApp } from "../apps/ProjectsApp";
 import { ExperienceApp } from "../apps/ExperienceApp";
 import { TerminalApp } from "../apps/TerminalApp";
+import { StoryApp } from "../apps/StoryApp";
+import dynamic from "next/dynamic";
+
+const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
 const desktopApps = [
   {
@@ -46,6 +51,12 @@ const desktopApps = [
     name: "Coffee",
     icon: Coffee,
     component: CoffeeApp,
+  },
+  {
+    id: "story",
+    name: "Story",
+    icon: Flower,
+    component: StoryApp,
   },
 ];
 
@@ -116,10 +127,9 @@ export function Desktop() {
   return (
     <div className="fixed inset-0 overflow-hidden">
       <MenuBar />
-      {/* Mesh Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.3),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(120,119,198,0.3),transparent_50%)]" />
+      {/* Ambient Scene */}
+      <div className="absolute inset-0 -z-10">
+        <Scene />
       </div>
 
       {/* Desktop Icons */}
