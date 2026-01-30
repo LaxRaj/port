@@ -17,13 +17,14 @@ import { Dock, type DockItem } from "./Dock";
 import { DesktopIcon } from "./DesktopIcon";
 import { WindowManager } from "./WindowManager";
 import { MenuBar } from "./MenuBar";
+import { EtherealBackground } from "./EtherealBackground";
 import { AboutMeApp } from "../apps/AboutMeApp";
-import { CoffeeApp } from "../apps/CoffeeApp";
 import { ContactApp } from "../apps/ContactApp";
 import { ProjectsApp } from "../apps/ProjectsApp";
 import { ExperienceApp } from "../apps/ExperienceApp";
 import { TerminalApp } from "../apps/TerminalApp";
-import { StoryApp } from "../apps/StoryApp";
+// import { CoffeeApp } from "../apps/CoffeeApp";
+// import { StoryApp } from "../apps/StoryApp";
 
 const desktopApps = [
   {
@@ -44,19 +45,20 @@ const desktopApps = [
     icon: ExperienceIcon,
     component: ExperienceApp,
   },
-  {
-    id: "coffee",
-    name: "Coffee",
-    icon: CoffeeIcon,
-    component: CoffeeApp,
-  },
-  {
-    id: "story",
-    name: "Story",
-    icon: StoryIcon,
-    component: StoryApp,
-  },
+  // {
+  //   id: "coffee",
+  //   name: "Coffee",
+  //   icon: CoffeeIcon,
+  //   component: CoffeeApp,
+  // },
+  // {
+  //   id: "story",
+  //   name: "Story",
+  //   icon: StoryIcon,
+  //   component: StoryApp,
+  // },
 ];
+
 
 const windowApps = [
   ...desktopApps,
@@ -195,6 +197,9 @@ export function Desktop() {
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#0b0b0f]">
       <MenuBar />
+      <div className="absolute inset-0 -z-10">
+        <EtherealBackground />
+      </div>
 
       {/* Desktop Icons */}
       <div className="absolute left-6 top-16 z-10 grid grid-cols-1 gap-4 pt-2">

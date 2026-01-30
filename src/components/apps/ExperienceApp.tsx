@@ -1,134 +1,94 @@
 "use client";
 
-import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { GitCommit, Circle } from "lucide-react";
+import { useState } from "react";
 
-const experienceItems = [
+type Milestone = {
+  id: string;
+  date: string;
+  title: string;
+  description: string;
+};
+
+const milestones: Milestone[] = [
   {
-    date: "Current",
-    title: "AI Automation Agency — Founder",
-    message: "Building AI agents and modern product stacks for founders.",
-  },
-  {
-    date: "Jan 2026",
-    title: "Software Engineer — Job Search",
-    message: "Applying to high-impact engineering roles across the Bay Area.",
-  },
-  {
+    id: "sfsu",
     date: "Dec 2025",
-    title: "B.S. Computer Science — SFSU",
-    message: "Graduated with a focus on systems, AI, and product engineering.",
+    title: "B.S. in Computer Science — San Francisco State University",
+    description: "Focused on systems, AI, and product engineering fundamentals.",
   },
   {
-    date: "Jun 2025",
-    title: "App Development Intern — LOOK",
-    message: "Shipped mobile features and improved onboarding funnels.",
+    id: "customs",
+    date: "Project",
+    title: "Customs Compliance AI Agent",
+    description: "LLM-driven automation to streamline compliance workflows.",
   },
   {
-    date: "Spring 2025",
-    title: "SF Volunteering + Tennis Leagues",
-    message: "Community leadership and consistency outside of code.",
+    id: "email-suite",
+    date: "Project",
+    title: "Email Intelligence Suite",
+    description: "OpenAI-powered NLP tooling for smart inbox triage.",
+  },
+  {
+    id: "community",
+    date: "Community",
+    title: "Think Round, Inc. + The Drawing Room SF",
+    description: "Arts + tech volunteering with a human-centered focus.",
   },
 ];
-
-const intensityClasses = [
-  "bg-emerald-950/30",
-  "bg-emerald-900/60",
-  "bg-emerald-700/70",
-  "bg-emerald-500/80",
-  "bg-emerald-400",
-];
-
-function mulberry32(seed: number) {
-  return () => {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 export function ExperienceApp() {
-  const heatmap = useMemo(() => {
-    const rand = mulberry32(98423);
-    return Array.from({ length: 52 * 7 }, () => Math.floor(rand() * 5));
-  }, []);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   return (
-    <div className="h-full w-full overflow-hidden p-6 text-gray-100">
-      <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/10 bg-[#0d1117]/90 p-6 shadow-2xl backdrop-blur-md">
-        {/* Heatmap */}
-        <div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-white/50">
-                Contribution Graph
-              </p>
-              <h2 className="mt-2 text-xl font-semibold text-white">
-                Consistent shipping across the year
-              </h2>
-            </div>
-            <div className="text-xs text-white/50">2025</div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-52 gap-1">
-            {heatmap.map((level, index) => (
-              <div
-                key={`${index}-${level}`}
-                className={`h-3 w-3 rounded-[3px] ${intensityClasses[level]}`}
-              />
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-end gap-2 text-[11px] text-white/50">
-            <span>Less</span>
-            <div className="flex items-center gap-1">
-              {intensityClasses.map((cls, index) => (
-                <div key={index} className={`h-3 w-3 rounded-[3px] ${cls}`} />
+    <div className="h-full w-full p-6 text-white">
+      <div className="h-full rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-6">
+        <div className="grid h-full grid-cols-[36px_1fr] gap-6">
+          {/* Gutter */}
+          <div className="relative">
+            <motion.div
+              className="absolute left-1/2 top-2 h-[calc(100%-1rem)] w-[2px] -translate-x-1/2 bg-gradient-to-b from-transparent via-white/20 to-transparent"
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+              style={{ transformOrigin: "top" }}
+            />
+            <div className="absolute left-1/2 top-2 flex h-full -translate-x-1/2 flex-col gap-10">
+              {milestones.map((item) => (
+                <div key={item.id} className="relative">
+                  <div
+                    className={`h-3 w-3 rounded-full border border-white/20 bg-white/20 transition ${
+                      hoveredId === item.id
+                        ? "shadow-[0_0_12px_rgba(168,139,250,0.8)]"
+                        : ""
+                    }`}
+                  />
+                </div>
               ))}
             </div>
-            <span>More</span>
           </div>
-        </div>
 
-        {/* Timeline */}
-        <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-5">
-          <motion.div
-            className="absolute left-6 top-6 h-[calc(100%-3rem)] w-px bg-white/20"
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            style={{ transformOrigin: "top" }}
-          />
-
+          {/* Content */}
           <div className="max-h-full overflow-y-auto pr-4 font-mono">
-            {experienceItems.map((item, index) => (
+            {milestones.map((item, index) => (
               <motion.div
-                key={item.title}
-                className="relative flex gap-6 pb-8 pl-12"
-                initial={{ opacity: 0, y: 10 }}
+                key={item.id}
+                onHoverStart={() => setHoveredId(item.id)}
+                onHoverEnd={() => setHoveredId(null)}
+                className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <div className="absolute left-3 top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-[#0d1117]">
-                  {index === 0 ? (
-                    <GitCommit className="h-4 w-4 text-emerald-300" />
-                  ) : (
-                    <Circle className="h-3.5 w-3.5 text-white/40" />
-                  )}
-                </div>
-                <div className="group">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">
-                    {item.date}
-                  </p>
-                  <h3 className="mt-2 text-base font-semibold text-white group-hover:text-emerald-300 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-white/60 group-hover:text-emerald-200 transition-colors">
-                    {item.message}
-                  </p>
-                </div>
+                <p className="text-[11px] uppercase tracking-widest text-white/50">
+                  {item.date}
+                </p>
+                <h3 className="mt-2 text-sm font-semibold text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm text-white/70">
+                  {item.description}
+                </p>
               </motion.div>
             ))}
           </div>
