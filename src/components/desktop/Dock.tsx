@@ -23,8 +23,8 @@ export function Dock({ items, activeIds = [] }: DockProps) {
   const [centers, setCenters] = useState<number[]>([]);
   const dockRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const mouseX = useMotionValue(-9999);
-  const mouseY = useMotionValue(-9999);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
   const bounceTimeoutRef = useRef<number | null>(null);
   const hoveredName = hoveredIndex !== null ? items[hoveredIndex]?.name : null;
 
@@ -137,7 +137,7 @@ function DockIcon({
   isHovered: boolean;
   isBouncing: boolean;
   center: number;
-  mouseX: ReturnType<typeof useMotionValue>;
+  mouseX: import("framer-motion").MotionValue<number>;
   setHoveredIndex: (index: number | null) => void;
   setRef: (el: HTMLButtonElement | null) => void;
   onClick: () => void;

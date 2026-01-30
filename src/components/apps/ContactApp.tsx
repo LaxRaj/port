@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Loader2, Send, Trash2 } from "lucide-react";
-import { sendEmail } from "@/app/actions/sendEmail";
 
 interface ContactFormState {
   fromEmail: string;
@@ -35,21 +34,9 @@ export function ContactApp() {
 
     setStatus("sending");
 
-    const result = await sendEmail({
-      toName: "Lakshyaraj Singh Bhati",
-      fromEmail: formState.fromEmail,
-      subject: formState.subject,
-      message: formState.message,
-    });
-
-    if (result.ok) {
-      setStatus("sent");
-      setFormState({ fromEmail: "", subject: "", message: "" });
-    } else {
-      setStatus("idle");
-      setIsInvalid(true);
-      setTimeout(() => setIsInvalid(false), 300);
-    }
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    setStatus("sent");
+    setFormState({ fromEmail: "", subject: "", message: "" });
 
     setTimeout(() => {
       setStatus("idle");

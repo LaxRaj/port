@@ -120,20 +120,10 @@ export function TerminalApp() {
     }
 
     setIsBusy(true);
-    const reply = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: trimmed }),
-    })
-      .then(async (res) => {
-        const data = (await res.json()) as { message?: string; error?: string };
-        if (!res.ok) {
-          return data.error ?? "AI error.";
-        }
-        return data.message ?? "No response.";
-      })
-      .catch(() => "Unable to reach the AI service right now.");
-    pushMessage("assistant", reply);
+    pushMessage(
+      "system",
+      "[ERROR]: Neural link offline. Check environment variables."
+    );
     setIsBusy(false);
   };
 

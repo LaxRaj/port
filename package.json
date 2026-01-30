@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d out",
     "start": "next start",
     "lint": "next lint"
@@ -21,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/LaxRaj/port/issues"
   },
-  "homepage": "https://github.com/LaxRaj/port#readme",
+  "homepage": "https://laxraj.github.io/port",
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
@@ -46,5 +47,8 @@
     "three": "^0.182.0",
     "typescript": "^5.9.3",
     "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

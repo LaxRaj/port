@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, type Variants } from "framer-motion";
 import { BookOpen, CloudFog, Music2, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -13,13 +13,13 @@ const containerVariants = {
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 18, scale: 0.98 },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: "spring", stiffness: 200, damping: 18 },
+    transition: { type: "spring" as const, stiffness: 200, damping: 18 },
   },
 };
 
@@ -73,12 +73,14 @@ function SpotlightCard({
       transition={{ type: "spring", stiffness: 150, damping: 20 }}
       onMouseMove={handleMouseMove}
       className={`relative overflow-hidden rounded-3xl border border-white/10 bg-black/5 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:bg-white/5 ${className}`}
-      style={{
-        "--x": springX,
-        "--y": springY,
-        backgroundImage:
-          "radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)",
-      }}
+      style={
+        {
+          "--x": springX,
+          "--y": springY,
+          backgroundImage:
+            "radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)",
+        } as React.CSSProperties
+      }
     >
       {children}
     </motion.div>
