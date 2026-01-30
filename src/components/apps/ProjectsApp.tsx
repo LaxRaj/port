@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Bot,
-  DollarSign,
-  FileCode,
-  Folder,
-  Github,
-  LayoutGrid,
-  Search,
-} from "lucide-react";
+import { FileCode, Github } from "lucide-react";
 
 interface Project {
   name: string;
@@ -55,24 +47,8 @@ const projects: Project[] = [
   },
 ];
 
-const categories = [
-  { id: "all", label: "All Projects", icon: LayoutGrid },
-  { id: "ai", label: "AI Tools", icon: Bot },
-  { id: "fintech", label: "Fintech", icon: DollarSign },
-  { id: "oss", label: "Open Source", icon: Github },
-];
-
-function FileIcon({ type }: { type: string }) {
-  return (
-    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50/70 dark:bg-blue-900/30 border border-white/30 shadow">
-      <FileCode className="h-7 w-7 text-blue-600" />
-      <span className="sr-only">{type}</span>
-    </div>
-  );
-}
-
 export function ProjectsApp() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [expandedName, setExpandedName] = useState<string | null>(null);
 
   const handleOpenProject = (project: Project) => {
     if (typeof window !== "undefined") {
@@ -81,115 +57,81 @@ export function ProjectsApp() {
   };
 
   return (
-    <div className="flex h-full text-sm text-gray-800 dark:text-gray-100">
-      {/* Sidebar */}
-      <div className="w-[200px] border-r border-black/5 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-4">
-        <h3 className="mb-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-          Favorites
-        </h3>
-        <ul className="space-y-2">
-          {categories.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center gap-2 rounded-lg px-2 py-1 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Main Area */}
-      <div className="flex flex-1 flex-col bg-white/40 dark:bg-black/20 backdrop-blur-md">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-black/5 px-4 py-3 text-xs text-gray-500">
-          <div className="flex items-center gap-2">
-            <Folder className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">Portfolio</span>
-            <span className="text-gray-400">›</span>
-            <span className="text-gray-800 dark:text-gray-200">Projects</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-full border border-white/30 bg-white/70 px-3 py-1 text-xs text-gray-500 shadow-sm">
-            <Search className="h-3.5 w-3.5" />
-            <span>Search</span>
-          </div>
+    <div className="relative h-full w-full bg-white/5 backdrop-blur-xl p-6 text-sm text-white">
+      <div className="flex flex-col">
+        <div className="grid grid-cols-[minmax(240px,1.2fr)_minmax(180px,1fr)_minmax(120px,0.5fr)] border-b border-white/10 pb-2 text-[11px] font-medium text-white/50">
+          <span>Name</span>
+          <span>Tech Stack</span>
+          <span>Category</span>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Grid */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-4 justify-center">
-              {projects.map((project) => {
-                const isSelected = selectedProject?.name === project.name;
-                return (
-                  <div
-                    key={project.name}
-                    className={[
-                      "group flex cursor-pointer flex-col items-center gap-3 rounded-2xl p-3 transition",
-                      isSelected
-                        ? "bg-blue-50/70 ring-2 ring-blue-400/60"
-                        : "hover:bg-blue-50/40",
-                    ].join(" ")}
-                    onClick={() => setSelectedProject(project)}
-                    onDoubleClick={() => handleOpenProject(project)}
-                  >
-                    <FileIcon type={project.type} />
-                    <span className="w-full truncate text-center text-xs font-medium text-gray-700 dark:text-gray-200">
+        <div className="mt-2 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin">
+          {projects.map((project) => {
+            const isExpanded = expandedName === project.name;
+            return (
+              <div key={project.name} className="border-b border-white/5">
+                <button
+                  className="grid w-full grid-cols-[minmax(240px,1.2fr)_minmax(180px,1fr)_minmax(120px,0.5fr)] items-center gap-4 rounded-xl px-2 py-3 text-left transition hover:bg-white/5"
+                  onClick={() =>
+                    setExpandedName(isExpanded ? null : project.name)
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                      <FileCode className="h-4 w-4 text-white/70" />
+                    </div>
+                    <span className="text-sm font-medium text-white/90 whitespace-normal break-words">
                       {project.name}
                     </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Inspector */}
-          <div className="w-[260px] border-l border-black/5 bg-white/60 dark:bg-black/40 backdrop-blur-lg p-5">
-            {selectedProject ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <FileIcon type={selectedProject.type} />
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                      Selected
-                    </p>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {selectedProject.name}
-                    </h3>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  {selectedProject.description}
-                </p>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-                    Tech Stack
-                  </p>
-                  <ul className="mt-2 space-y-1 text-xs text-gray-700 dark:text-gray-200">
-                    {selectedProject.techStack.map((tech) => (
-                      <li key={tech} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                  <div className="flex flex-wrap gap-2">
+                    {project.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] text-white/70"
+                      >
                         {tech}
-                      </li>
+                      </span>
                     ))}
-                  </ul>
-                </div>
-                <button
-                  onClick={() => handleOpenProject(selectedProject)}
-                  className="w-full rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow hover:bg-blue-700 transition"
-                >
-                  Visit Repository
+                  </div>
+                  <span className="text-xs text-white/60">{project.type}</span>
                 </button>
+                {isExpanded && (
+                  <div className="grid grid-cols-1 gap-3 px-12 pb-4 text-white/70">
+                    <p className="text-sm">
+                      {project.description} This build emphasizes clean data
+                      flow and predictable state for teams.
+                    </p>
+                    <button
+                      onClick={() => handleOpenProject(project)}
+                      className="w-fit rounded-xl bg-white px-4 py-2 text-xs font-semibold text-black shadow hover:bg-white/90 transition"
+                    >
+                      View on GitHub
+                    </button>
+                    <div className="flex items-center gap-2 text-[10px] text-white/40">
+                      <Github className="h-3.5 w-3.5" />
+                      Repository link
+                    </div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="text-xs text-gray-500">
-                Select a project to view details.
-              </div>
-            )}
-          </div>
+            );
+          })}
         </div>
       </div>
+
+      <style jsx>{`
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 999px;
+        }
+      `}</style>
     </div>
   );
 }

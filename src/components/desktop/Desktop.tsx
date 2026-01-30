@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Coffee,
   FileText,
@@ -23,39 +24,36 @@ import { ProjectsApp } from "../apps/ProjectsApp";
 import { ExperienceApp } from "../apps/ExperienceApp";
 import { TerminalApp } from "../apps/TerminalApp";
 import { StoryApp } from "../apps/StoryApp";
-import dynamic from "next/dynamic";
-
-const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
 const desktopApps = [
   {
     id: "projects",
     name: "Projects",
-    icon: Folder,
+    icon: ProjectsFolderIcon,
     component: ProjectsApp,
   },
   {
     id: "about",
     name: "About Me",
-    icon: Sun,
+    icon: AboutMeIcon,
     component: AboutMeApp,
   },
   {
     id: "experience",
     name: "Experience",
-    icon: Suitcase,
+    icon: ExperienceIcon,
     component: ExperienceApp,
   },
   {
     id: "coffee",
     name: "Coffee",
-    icon: Coffee,
+    icon: CoffeeIcon,
     component: CoffeeApp,
   },
   {
     id: "story",
     name: "Story",
-    icon: Flower,
+    icon: StoryIcon,
     component: StoryApp,
   },
 ];
@@ -105,6 +103,76 @@ const dockItems: DockItem[] = [
   },
 ];
 
+function ProjectsFolderIcon({ className }: { className?: string }) {
+  return (
+    <span className={`relative block h-8 w-8 ${className ?? ""}`}>
+      <Image
+        src="/assets/flames.png"
+        alt="Projects folder icon"
+        fill
+        sizes="32px"
+        className="object-contain"
+      />
+    </span>
+  );
+}
+
+function AboutMeIcon({ className }: { className?: string }) {
+  return (
+    <span className={`relative block h-8 w-8 ${className ?? ""}`}>
+      <Image
+        src="/assets/superhero.png"
+        alt="About me icon"
+        fill
+        sizes="32px"
+        className="object-contain"
+      />
+    </span>
+  );
+}
+
+function ExperienceIcon({ className }: { className?: string }) {
+  return (
+    <span className={`relative block h-8 w-8 ${className ?? ""}`}>
+      <Image
+        src="/assets/desktop-computer.png"
+        alt="Experience icon"
+        fill
+        sizes="32px"
+        className="object-contain"
+      />
+    </span>
+  );
+}
+
+function CoffeeIcon({ className }: { className?: string }) {
+  return (
+    <span className={`relative block h-8 w-8 ${className ?? ""}`}>
+      <Image
+        src="/assets/energy-drink.png"
+        alt="Coffee icon"
+        fill
+        sizes="32px"
+        className="object-contain"
+      />
+    </span>
+  );
+}
+
+function StoryIcon({ className }: { className?: string }) {
+  return (
+    <span className={`relative block h-8 w-8 ${className ?? ""}`}>
+      <Image
+        src="/assets/flower.png"
+        alt="Story icon"
+        fill
+        sizes="32px"
+        className="object-contain"
+      />
+    </span>
+  );
+}
+
 export function Desktop() {
   const [openWindows, setOpenWindows] = useState<string[]>([]);
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
@@ -125,12 +193,8 @@ export function Desktop() {
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden bg-[#0b0b0f]">
       <MenuBar />
-      {/* Ambient Scene */}
-      <div className="absolute inset-0 -z-10">
-        <Scene />
-      </div>
 
       {/* Desktop Icons */}
       <div className="absolute left-6 top-16 z-10 grid grid-cols-1 gap-4 pt-2">

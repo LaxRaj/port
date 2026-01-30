@@ -18,8 +18,8 @@ export function DesktopIcon({ id, name, icon: Icon, onOpen }: DesktopIconProps) 
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 350, damping: 20 }}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-md border border-white/30 shadow-lg">
-        <Icon className="h-8 w-8 text-gray-800 dark:text-gray-200" />
+      <div className="flex h-6 w-8 items-center justify-center">
+        <Icon className="h-8 w-8 text-gray-200" />
       </div>
       <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
         {name}
